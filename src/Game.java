@@ -1,13 +1,26 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.Image;
+import java.io.IOException;
+
 public class Game {
     private Deck deck;
     private Card firstSelected;
     private Card secondSelected;
-    private boolean busy;
+    private boolean busy; // used to prevent extra clicks
+    private boolean isHard;
+    private int moveCount;
+    private final int MOVE_LIMIT = 20;
 
-    public Game() {
-        deck = new Deck();
+    public Game(String theme, boolean isHard) {
+        deck = new Deck(theme);
         resetSelections();
         busy = false;
+        this.isHard = isHard;
+        moveCount = 0;
     }
 
     public Deck getDeck() {
@@ -54,6 +67,7 @@ public class Game {
         return false;
     }
 
+
     public void flipBackSelections() {
         if (firstSelected != null && secondSelected != null) {
             if (!checkMatch()) {
@@ -67,6 +81,10 @@ public class Game {
             }
         }
         resetSelections();
+        if (isHard) {
+            moveCount++;
+            System.out.println("Hard Mode - Move count: " + moveCount);
+        }
     }
 
     private void resetSelections() {
@@ -83,15 +101,33 @@ public class Game {
         return true;
     }
 
-    public void restart() {
-        deck = new Deck();
+    public boolean isTimeUp() {
+        return isHard && (moveCount >= MOVE_LIMIT) && !isGameOver();
+    }
+
+    public boolean isHardMode() {
+        return isHard;
+    }
+
+    public int getMoveCount() {
+        return moveCount;
+    }
+
+    public void restart(String theme, boolean isHard) {
+        deck = new Deck(theme);
         resetSelections();
         busy = false;
+        this.isHard = isHard;
+        moveCount = 0;
         System.out.println("Game restarted.");
     }
 
     public void setBusy(boolean busy) {
         this.busy = busy;
         System.out.println("Set busy to " + busy);
+    }
+
+    public boolean isBusy() {
+        return busy;
     }
 }

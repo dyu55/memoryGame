@@ -32,6 +32,11 @@ public class BoardPanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (game.isBusy() || game.isTwoCardsSelected()) {
+            System.out.println("Ignoring click: Game is busy or two cards are already selected.");
+            return;
+        }
+
         int cardWidth = getWidth() / cols;
         int cardHeight = getHeight() / rows;
         int col = e.getX() / cardWidth;
@@ -56,9 +61,63 @@ public class BoardPanel extends JPanel implements MouseListener {
                             game.setBusy(false);
                             repaint();
 
+                            Window window = SwingUtilities.getWindowAncestor(BoardPanel.this);
+                            if (window instanceof MemoryGameGUI) {
+                                ((MemoryGameGUI) window).updateTitle();
+                            }
+
+                            // Check win condition.
                             if (game.isGameOver()) {
                                 System.out.println("Game Over detected. All cards matched.");
-                                JOptionPane.showMessageDialog(BoardPanel.this, "Congratulations, you won!");
+                                Object[] options = {"Quit", "Play Again"};
+                                int choice = JOptionPane.showOptionDialog(
+                                        BoardPanel.this,
+                                        "Congratulations, you win!\nWhat do you want to do next?",
+                                        "Game Over",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.INFORMATION_MESSAGE,
+                                        null,
+                                        options,
+                                        options[1]);
+
+                                if (choice == 0) {  // Quit
+                                    Window win = SwingUtilities.getWindowAncestor(BoardPanel.this);
+                                    if (win != null) {
+                                        win.dispose();
+                                    }
+                                } else if (choice == 1) {  // Play Again
+                                    new GameConfigSelector();
+                                    Window win = SwingUtilities.getWindowAncestor(BoardPanel.this);
+                                    if (win != null) {
+                                        win.dispose();
+                                    }
+                                }
+                            }
+                            // Check if move limit is reached in hard mode.
+                            else if (game.isHardMode() && game.isTimeUp()) {
+                                System.out.println("Hard mode: move limit reached.");
+                                int option = JOptionPane.showOptionDialog(
+                                        BoardPanel.this,
+                                        "Game Over! You have exceeded the move limit.\nDo you want to try again?",
+                                        "Game Over",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.INFORMATION_MESSAGE,
+                                        null,
+                                        new Object[]{"Yes", "No"},
+                                        "Yes");
+
+                                if (option == JOptionPane.YES_OPTION) {
+                                    new GameConfigSelector();
+                                    Window win = SwingUtilities.getWindowAncestor(BoardPanel.this);
+                                    if (win != null) {
+                                        win.dispose();
+                                    }
+                                } else {
+                                    Window win = SwingUtilities.getWindowAncestor(BoardPanel.this);
+                                    if (win != null) {
+                                        win.dispose();
+                                    }
+                                }
                             }
                         }
                     });
@@ -71,8 +130,7 @@ public class BoardPanel extends JPanel implements MouseListener {
         }
     }
 
-    @Override public void mousePressed(MouseEvent e) {}
-    @Override public void mouseReleased(MouseEvent e) {}
-    @Override public void mouseEntered(MouseEvent e) {}
-    @Override public void mouseExited(MouseEvent e) {}
+
+
+
 }

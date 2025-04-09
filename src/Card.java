@@ -5,9 +5,12 @@ public class Card {
     private int value;
     private boolean faceUp;
     private boolean matched;
+    private Image frontImage;
+    private static Image coverImage;
 
-    public Card(int value) {
+    public Card(int value, Image frontImage) {
         this.value = value;
+        this.frontImage = frontImage;
         this.faceUp = false;
         this.matched = false;
     }
@@ -34,34 +37,45 @@ public class Card {
         }
     }
 
+    public static void setCoverImage(Image cover) {
+        coverImage = cover;
+    }
+
     public void draw(Graphics2D g, int x, int y, int width, int height) {
         if (faceUp || matched) {
-            g.setColor(Color.WHITE);
-            g.fillRect(x, y, width, height);
-            g.setColor(Color.BLACK);
-            g.drawRect(x, y, width, height);
-
-            g.setFont(new Font("Arial", Font.BOLD, 24));
-            String text = String.valueOf(value);
-            FontMetrics fm = g.getFontMetrics();
-            int textWidth = fm.stringWidth(text);
-            int textHeight = fm.getAscent();
-            int tx = x + (width - textWidth) / 2;
-            int ty = y + (height + textHeight) / 2;
-            g.drawString(text, tx, ty);
+            if(frontImage != null) {
+                g.drawImage(frontImage, x, y, width, height, null);
+            } else {
+                g.setColor(Color.WHITE);
+                g.fillRect(x, y, width, height);
+                g.setColor(Color.BLACK);
+                g.drawRect(x, y, width, height);
+                g.setFont(new Font("Arial", Font.BOLD, 24));
+                String text = String.valueOf(value);
+                FontMetrics fm = g.getFontMetrics();
+                int textWidth = fm.stringWidth(text);
+                int textHeight = fm.getAscent();
+                int tx = x + (width - textWidth) / 2;
+                int ty = y + (height + textHeight) / 2;
+                g.drawString(text, tx, ty);
+            }
         } else {
-            Color bg = UIManager.getColor("Button.background");
-            g.setColor(bg);
-            g.fillRect(x, y, width, height);
+            if (coverImage != null) {
+                g.drawImage(coverImage, x, y, width, height, null);
+            } else {
+                Color bg = UIManager.getColor("Button.background");
+                g.setColor(bg);
+                g.fillRect(x, y, width, height);
 
-            Color topLeft = bg.brighter();
-            Color bottomRight = bg.darker();
-            g.setColor(topLeft);
-            g.drawLine(x, y, x + width - 1, y);
-            g.drawLine(x, y, x, y + height - 1);
-            g.setColor(bottomRight);
-            g.drawLine(x, y + height - 1, x + width - 1, y + height - 1);
-            g.drawLine(x + width - 1, y, x + width - 1, y + height - 1);
+                Color topLeft = bg.brighter();
+                Color bottomRight = bg.darker();
+                g.setColor(topLeft);
+                g.drawLine(x, y, x + width - 1, y);
+                g.drawLine(x, y, x, y + height - 1);
+                g.setColor(bottomRight);
+                g.drawLine(x, y + height - 1, x + width - 1, y + height - 1);
+                g.drawLine(x + width - 1, y, x + width - 1, y + height - 1);
+            }
         }
     }
 
