@@ -32,6 +32,7 @@ public class BoardPanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // Ignore clicks if busy or if two cards are already selected.
         if (game.isBusy() || game.isTwoCardsSelected()) {
             System.out.println("Ignoring click: Game is busy or two cards are already selected.");
             return;
@@ -61,6 +62,7 @@ public class BoardPanel extends JPanel implements MouseListener {
                             game.setBusy(false);
                             repaint();
 
+                            // After each turn in hard mode, update the title with the new remaining count.
                             Window window = SwingUtilities.getWindowAncestor(BoardPanel.this);
                             if (window instanceof MemoryGameGUI) {
                                 ((MemoryGameGUI) window).updateTitle();
@@ -132,5 +134,8 @@ public class BoardPanel extends JPanel implements MouseListener {
 
 
 
-
+    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 }
