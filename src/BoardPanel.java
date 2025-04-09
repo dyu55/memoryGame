@@ -58,7 +58,7 @@ public class BoardPanel extends JPanel implements MouseListener {
 
                             if (game.isGameOver()) {
                                 System.out.println("Game Over detected. All cards matched.");
-                                JOptionPane.showMessageDialog(BoardPanel.this, "恭喜，你赢了！");
+                                JOptionPane.showMessageDialog(BoardPanel.this, "Congratulations, you won!");
                             }
                         }
                     });
